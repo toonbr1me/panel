@@ -4,9 +4,9 @@ from app.core.types import BackendType, CoreType
 
 
 class AbstractCore(ABC):
-    @abstractmethod
     def __init__(self, config: dict, exclude_inbound_tags: list[str], fallbacks_inbound_tags: list[str]) -> None:
-        raise NotImplementedError
+        # Base initialization - subclasses should call this via super().__init__()
+        pass
 
     @property
     @abstractmethod
