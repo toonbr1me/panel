@@ -28,7 +28,7 @@ class XRayConfig(AbstractCore, dict):
         if isinstance(config, dict):
             config = deepcopy(config)
 
-        super().__init__(config)
+        super().__init__(config, exclude_inbound_tags, fallbacks_inbound_tags)
         self._validate()
 
         if exclude_inbound_tags is None:

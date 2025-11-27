@@ -28,6 +28,7 @@ class SingBoxConfig(AbstractCore):
         else:
             raise ValueError("Unsupported config type for Sing-Box core")
 
+        super().__init__(parsed_config, exclude_inbound_tags or set(), fallbacks_inbound_tags or set())
         self._config = parsed_config
         self._validate()
 
