@@ -1,0 +1,2 @@
+# Keep shell scripts executable inside Linux containers
+*.sh text eol=lf
