@@ -1,5 +1,5 @@
 import { Card } from '@/components/ui/card'
-import { CoreResponse } from '@/service/api'
+import { CoreResponse, CoreType as CoreTypeEnum } from '@/service/api'
 import { useTranslation } from 'react-i18next'
 import { Button } from '@/components/ui/button'
 import { MoreVertical, Pencil, Trash2, Copy } from 'lucide-react'
@@ -16,6 +16,7 @@ interface CoreProps {
 
 export default function Core({ core, onEdit, onDuplicate, onDelete }: CoreProps) {
   const { t } = useTranslation()
+  const coreTypeTranslation = core.core_type === CoreTypeEnum.sing_box ? 'coreConfigModal.coreTypeSingBox' : 'coreConfigModal.coreTypeXray'
 
   const handleDeleteClick = (event: Event) => {
     event.stopPropagation()
@@ -32,6 +33,7 @@ export default function Core({ core, onEdit, onDuplicate, onDelete }: CoreProps)
             <div className="flex items-center gap-2">
               <div className={cn('min-h-2 min-w-2 rounded-full', 'bg-green-500')} />
               <div className="font-medium">{core.name}</div>
+              <span className="rounded-full bg-muted px-2 py-0.5 text-xs font-medium text-muted-foreground">{t(coreTypeTranslation)}</span>
             </div>
           </div>
         </div>

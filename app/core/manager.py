@@ -5,6 +5,8 @@ from aiocache import cached
 
 from app import on_startup
 from app.core.abstract_core import AbstractCore
+from app.core.singbox import SingBoxConfig
+from app.core.types import CoreType
 from app.core.xray import XRayConfig
 from app.db import GetDB
 from app.db.crud.core import get_core_configs
@@ -20,10 +22,19 @@ class CoreManager:
 
     @staticmethod
     def validate_core(
-        config: dict, exclude_inbounds: set[str] | None = None, fallbacks_inbounds: set[str] | None = None
-    ):
+        core_type: CoreType,
+        config: dict,
+        exclude_inbounds: set[str] | None = None,
+        fallbacks_inbounds: set[str] | None = None,
+    ) -> AbstractCore:
         exclude_inbounds = exclude_inbounds or set()
         fallbacks_inbounds = fallbacks_inbounds or set()
+
+        if core_type == CoreType.SING_BOX:
+            if fallbacks_inbounds:
+                raise ValueError("Fallback inbound tags are not supported for Sing-Box cores")
+            return SingBoxConfig(config, exclude_inbound_tags=exclude_inbounds.copy())
+
         return XRayConfig(config, exclude_inbounds.copy(), fallbacks_inbounds.copy())
 
     async def update_inbounds(self):
@@ -39,8 +50,12 @@ class CoreManager:
             await self.get_inbounds_by_tag.cache.clear()
 
     async def update_core(self, db_core_config: CoreConfig):
+        core_type = db_core_config.core_type or CoreType.XRAY
         backend_config = self.validate_core(
-            db_core_config.config, db_core_config.exclude_inbound_tags, db_core_config.fallbacks_inbound_tags
+            core_type,
+            db_core_config.config,
+            db_core_config.exclude_inbound_tags,
+            db_core_config.fallbacks_inbound_tags,
         )
 
         async with self._lock:

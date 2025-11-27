@@ -156,7 +156,7 @@ class NodeOperation(BaseOperation):
         try:
             info = await pg_node.start(
                 config=core.to_str(),
-                backend_type=0,
+                backend_type=int(core.backend_type),
                 users=users,
                 keep_alive=db_node.keep_alive,
                 exclude_inbounds=core.exclude_inbound_tags,

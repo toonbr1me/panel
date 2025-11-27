@@ -1,4 +1,4 @@
-import { useGetAllCores, useModifyCoreConfig } from '@/service/api'
+import { useGetAllCores, useModifyCoreConfig, CoreType as CoreTypeEnum } from '@/service/api'
 import { CoreResponse } from '@/service/api'
 import Core from './core'
 import { useState, useEffect, useMemo } from 'react'
@@ -20,6 +20,7 @@ const initialDefaultValues: Partial<CoreConfigFormValues> = {
   name: '',
   config: JSON.stringify({}, null, 2),
   excluded_inbound_ids: [],
+  core_type: CoreTypeEnum.xray,
 }
 
 interface CoresProps {
@@ -63,6 +64,7 @@ export default function Cores({ isDialogOpen, onOpenChange, cores, onEditCore, o
             .map((id: string) => id.trim())
             .filter((id: string) => id.trim() !== '')
         : [],
+      core_type: core.core_type || CoreTypeEnum.xray,
     })
     onOpenChange?.(true)
   }

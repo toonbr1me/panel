@@ -5,6 +5,7 @@ from app.db.crud.core import create_core_config, modify_core_config, remove_core
 from app.models.admin import AdminDetails
 from app.models.core import CoreCreate, CoreResponseList, CoreResponse
 from app.core.manager import core_manager
+from app.core.types import CoreType
 from app.operation import BaseOperation
 from app import notification
 from app.core.hosts import host_manager
@@ -16,8 +17,10 @@ logger = get_logger("core-operation")
 
 class CoreOperation(BaseOperation):
     async def create_core(self, db: AsyncSession, new_core: CoreCreate, admin: AdminDetails) -> CoreResponse:
+        core_type = new_core.core_type or CoreType.XRAY
         try:
-            core_manager.validate_core(new_core.config, new_core.exclude_inbound_tags, new_core.fallbacks_inbound_tags)
+            core_manager.validate_core(core_type, new_core.config, new_core.exclude_inbound_tags, new_core.fallbacks_inbound_tags)
+            new_core.core_type = core_type
             db_core = await create_core_config(db, new_core)
         except Exception as e:
             await self.raise_error(message=e, code=400, db=db)
@@ -40,10 +43,12 @@ class CoreOperation(BaseOperation):
         self, db: AsyncSession, core_id: int, modified_core: CoreCreate, admin: AdminDetails
     ) -> CoreResponse:
         db_core = await self.get_validated_core_config(db, core_id)
+        core_type = modified_core.core_type or db_core.core_type or CoreType.XRAY
         try:
             core_manager.validate_core(
-                modified_core.config, modified_core.exclude_inbound_tags, modified_core.fallbacks_inbound_tags
+                core_type, modified_core.config, modified_core.exclude_inbound_tags, modified_core.fallbacks_inbound_tags
             )
+            modified_core.core_type = core_type
             db_core = await modify_core_config(db, db_core, modified_core)
         except Exception as e:
             await self.raise_error(message=e, code=400, db=db)

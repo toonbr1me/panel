@@ -300,3 +300,31 @@ XRAY_CONFIG = {
         ]
     },
 }
+
+SING_BOX_CONFIG = {
+    "log": {"level": "info"},
+    "inbounds": [
+        {
+            "type": "vless",
+            "tag": "singbox-vless",
+            "listen": "::",
+            "listen_port": 8443,
+            "flow": "xtls-rprx-vision",
+            "tls": {
+                "enabled": True,
+                "server_name": "singbox.example.com",
+                "alpn": ["h2"],
+            },
+            "transport": {
+                "type": "ws",
+                "path": "/ws",
+                "headers": {"Host": "singbox.example.com"},
+            },
+            "users": [],
+        }
+    ],
+    "outbounds": [
+        {"type": "direct", "tag": "DIRECT"},
+        {"type": "block", "tag": "BLOCK"},
+    ],
+}

@@ -2,6 +2,8 @@ from datetime import datetime as dt
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.core.types import CoreType
+
 from .validators import StringArrayValidator
 
 
@@ -28,6 +30,7 @@ class CoreCreate(CoreBase):
     name: str | None = Field(max_length=256, default=None)
     exclude_inbound_tags: set | None = Field(default=None)
     fallbacks_inbound_tags: set | None = Field(default=None)
+    core_type: CoreType | None = Field(default=None)
 
     @field_validator("config", mode="before")
     def validate_config(cls, v: dict) -> dict:
@@ -43,6 +46,7 @@ class CoreCreate(CoreBase):
 class CoreResponse(CoreBase):
     id: int
     created_at: dt
+    core_type: CoreType
 
     model_config = ConfigDict(from_attributes=True)
 

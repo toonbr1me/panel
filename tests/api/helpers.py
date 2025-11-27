@@ -52,6 +52,7 @@ def create_core(
     config: dict[str, Any] | None = None,
     exclude: Iterable[str] | None = None,
     fallbacks: Iterable[str] | None = None,
+    core_type: str | None = None,
 ) -> dict:
     payload = {
         "config": config or XRAY_CONFIG,
@@ -59,6 +60,8 @@ def create_core(
         "exclude_inbound_tags": list(exclude or []),
         "fallbacks_inbound_tags": list(fallbacks or ["fallback-A", "fallback-B"]),
     }
+    if core_type:
+        payload["core_type"] = core_type
     response = client.post("/api/core", headers=auth_headers(access_token), json=payload)
     assert response.status_code == status.HTTP_201_CREATED
     return response.json()

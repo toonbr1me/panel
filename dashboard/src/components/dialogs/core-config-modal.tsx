@@ -11,7 +11,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import useDirDetection from '@/hooks/use-dir-detection'
 import { cn } from '@/lib/utils'
-import { useCreateCoreConfig, useModifyCoreConfig } from '@/service/api'
+import { useCreateCoreConfig, useModifyCoreConfig, CoreType as CoreTypeEnum } from '@/service/api'
+import type { CoreType as CoreTypeValue } from '@/service/api'
 import { isEmptyObject } from '@/utils/isEmptyObject.ts'
 import { generateMldsa65 } from '@/utils/mldsa65'
 import { queryClient } from '@/utils/query-client'
@@ -36,6 +37,7 @@ export const coreConfigFormSchema = z.object({
   public_key: z.string().optional(),
   private_key: z.string().optional(),
   restart_nodes: z.boolean().default(true),
+  core_type: coreTypeSchema.default(CoreTypeEnum.xray),
 })
 
 export type CoreConfigFormValues = z.infer<typeof coreConfigFormSchema>
@@ -73,6 +75,20 @@ const VLESS_ENCRYPTION_METHODS = [
   { value: 'xorpub', label: 'xorpub', translationKey: 'coreConfigModal.vlessEncryptionOptionXorpub' },
   { value: 'random', label: 'random', translationKey: 'coreConfigModal.vlessEncryptionOptionRandom' },
 ] as const
+
+const CORE_TYPE_VALUES = [CoreTypeEnum.xray, CoreTypeEnum.sing_box] as const
+const coreTypeSchema = z.enum(CORE_TYPE_VALUES)
+
+type CoreTypeOption = {
+  value: CoreTypeValue
+  label: string
+  description: string
+}
+
+const CORE_TYPE_OPTIONS: CoreTypeOption[] = [
+  { value: CoreTypeEnum.xray, label: 'coreConfigModal.coreTypeXray', description: 'coreConfigModal.coreTypeXrayDescription' },
+  { value: CoreTypeEnum.sing_box, label: 'coreConfigModal.coreTypeSingBox', description: 'coreConfigModal.coreTypeSingBoxDescription' },
+]
 
 interface VlessBuilderOptions {
   handshakeMethod: string
@@ -487,6 +503,7 @@ export default function CoreConfigModal({ isDialogOpen, onOpenChange, form, edit
             config: configObj,
             fallbacks_inbound_tags: fallbackTags,
             exclude_inbound_tags: excludeInboundTags,
+            core_type: values.core_type,
           },
           params: {
             restart_nodes: values.restart_nodes,
@@ -500,6 +517,7 @@ export default function CoreConfigModal({ isDialogOpen, onOpenChange, form, edit
             config: configObj,
             fallbacks_inbound_tags: fallbackTags,
             exclude_inbound_tags: excludeInboundTags,
+            core_type: values.core_type,
           },
         })
       }
@@ -525,7 +543,7 @@ export default function CoreConfigModal({ isDialogOpen, onOpenChange, form, edit
       // Handle validation errors
       if (error?.response?._data && !isEmptyObject(error?.response?._data)) {
         // For zod validation errors
-        const fields = ['name', 'config', 'fallback_id', 'excluded_inbound_ids']
+        const fields = ['name', 'config', 'fallback_id', 'excluded_inbound_ids', 'core_type']
 
         // Show first error in a toast
         if (error?.response?._data?.detail) {
@@ -612,10 +630,14 @@ export default function CoreConfigModal({ isDialogOpen, onOpenChange, form, edit
           excluded_inbound_ids: [],
           fallback_id: [],
           restart_nodes: true,
+          core_type: CoreTypeEnum.xray,
         })
       } else {
         // Set restart_nodes to true for editing
         form.setValue('restart_nodes', true)
+        if (!form.getValues('core_type')) {
+          form.setValue('core_type', CoreTypeEnum.xray)
+        }
       }
 
       // Force editor resize on mobile after modal opens
@@ -1394,6 +1416,35 @@ export default function CoreConfigModal({ isDialogOpen, onOpenChange, form, edit
                           <FormControl>
                             <Input isError={!!form.formState.errors.name} placeholder={t('coreConfigModal.namePlaceholder')} {...field} />
                           </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="core_type"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>{t('coreConfigModal.coreType')}</FormLabel>
+                          <FormControl>
+                            <Select value={field.value} onValueChange={field.onChange}>
+                              <SelectTrigger>
+                                <SelectValue placeholder={t('coreConfigModal.coreType')} />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {CORE_TYPE_OPTIONS.map(option => (
+                                  <SelectItem key={option.value} value={option.value}>
+                                    <div className="flex flex-col text-left">
+                                      <span>{t(option.label)}</span>
+                                      <span className="text-xs text-muted-foreground">{t(option.description)}</span>
+                                    </div>
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </FormControl>
+                          <p className="text-xs text-muted-foreground">{t('coreConfigModal.coreTypeDescription')}</p>
                           <FormMessage />
                         </FormItem>
                       )}

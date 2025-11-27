@@ -18,7 +18,7 @@ import useDirDetection from '@/hooks/use-dir-detection'
 import { useClipboard } from '@/hooks/use-clipboard'
 import { cn } from '@/lib/utils'
 import type { AdminDetails, UserResponse } from '@/service/api'
-import { useGetAdmins, useGetCurrentAdmin, useGetSystemStats } from '@/service/api'
+import { useGetAdmins, useGetCurrentAdmin, useGetSystemStats, CoreType as CoreTypeEnum } from '@/service/api'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useQueryClient } from '@tanstack/react-query'
 import { useDebouncedSearch } from '@/hooks/use-debounced-search'
@@ -201,6 +201,7 @@ const Dashboard = () => {
       public_key: '',
       private_key: '',
       restart_nodes: true,
+      core_type: CoreTypeEnum.xray,
     },
   })
 

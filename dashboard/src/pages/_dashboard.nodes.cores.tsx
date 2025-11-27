@@ -1,6 +1,6 @@
 import { useCallback, useState, useMemo } from 'react'
 import Cores from '@/components/settings/cores'
-import { useGetAllCores, useDeleteCoreConfig, useCreateCoreConfig } from '@/service/api'
+import { useGetAllCores, useDeleteCoreConfig, useCreateCoreConfig, CoreType as CoreTypeEnum } from '@/service/api'
 import { toast } from 'sonner'
 import { useTranslation } from 'react-i18next'
 import { useForm } from 'react-hook-form'
@@ -56,6 +56,7 @@ export default function CoreSettings() {
       config: JSON.stringify(defaultConfig, null, 2),
       excluded_inbound_ids: [],
       fallback_id: [],
+      core_type: CoreTypeEnum.xray,
     },
   })
 
@@ -76,6 +77,7 @@ export default function CoreSettings() {
           config: JSON.stringify(coreToEdit.config, null, 2),
           excluded_inbound_ids: excludedInboundIds,
           fallback_id: fallbackIds,
+          core_type: coreToEdit.core_type || CoreTypeEnum.xray,
         })
       } else {
         coreConfigForm.reset({
@@ -83,6 +85,7 @@ export default function CoreSettings() {
           config: JSON.stringify(defaultConfig, null, 2),
           excluded_inbound_ids: [],
           fallback_id: [],
+          core_type: CoreTypeEnum.xray,
         })
       }
 

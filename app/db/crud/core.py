@@ -1,6 +1,7 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.types import CoreType
 from app.db.models import CoreConfig
 from app.models.core import CoreCreate
 
@@ -35,6 +36,7 @@ async def create_core_config(db: AsyncSession, core_config: CoreCreate) -> CoreC
         config=core_config.config,
         exclude_inbound_tags=core_config.exclude_inbound_tags or set(),
         fallbacks_inbound_tags=core_config.fallbacks_inbound_tags or set(),
+        core_type=core_config.core_type or CoreType.XRAY,
     )
     db.add(db_core_config)
     await db.commit()

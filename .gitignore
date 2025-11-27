@@ -59,6 +59,8 @@ local_settings.py
 *.sqlite3
 *.sqlite3-journal
 *.db
+db.sqlite3
+db.sqlite3-journal
 
 # Flask stuff:
 instance/
@@ -114,6 +116,10 @@ celerybeat.pid
 .venv
 venv/
 venv.bak/
+venviv/
+.env.local
+.env.development
+.env.production
 .vscode/
 .cursor/
 
@@ -151,6 +157,12 @@ cython_debug/
 .env
 v2ray-core
 xray-core
+sing-box
+assets/
+.coverage*
+
+# Local virtual env
+venviv/
 
 # don't track custom/dev.json/yaml/yml configs, such as xray-custom.json or clash-dev.yaml
 *-custom.json
@@ -168,3 +180,15 @@ xray-core
 #ignore node-module for dashboard
 node_modules/
 deadlock-analysis.md
+dashboard/node_modules/
+dashboard/dist/
+dashboard/build/
+dashboard/.vite/
+dashboard/.turbo/
+dashboard/.parcel-cache/
+dashboard/.output/
+dashboard/.next/
+dashboard/.nuxt/
+dashboard/.svelte-kit/
+dashboard/bun.lockb
+dashboard/.env*

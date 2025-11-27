@@ -8,10 +8,12 @@ from typing import Union
 
 import commentjson
 
+from app.core.abstract_core import AbstractCore
+from app.core.types import BackendType, CoreType
 from app.utils.crypto import get_cert_SANs, get_x25519_public_key
 
 
-class XRayConfig(dict):
+class XRayConfig(AbstractCore, dict):
     def __init__(
         self,
         config: Union[dict, str, PosixPath] = {},
@@ -34,7 +36,7 @@ class XRayConfig(dict):
         if fallbacks_inbound_tags is None:
             fallbacks_inbound_tags = set()
         exclude_inbound_tags.update(fallbacks_inbound_tags)
-        self.exclude_inbound_tags = exclude_inbound_tags
+        self._exclude_inbound_tags = exclude_inbound_tags
 
         self._inbounds = []
         self._inbounds_by_tag = {}
@@ -411,3 +413,15 @@ class XRayConfig(dict):
     def copy(self):
         """Copy the config."""
         return deepcopy(self)
+
+    @property
+    def backend_type(self) -> BackendType:
+        return BackendType.XRAY
+
+    @property
+    def core_type(self) -> CoreType:
+        return CoreType.XRAY
+
+    @property
+    def exclude_inbound_tags(self) -> set[str]:
+        return self._exclude_inbound_tags

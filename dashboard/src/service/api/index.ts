@@ -1711,12 +1711,21 @@ export interface CoreResponse {
   fallbacks_inbound_tags: string[]
   id: number
   created_at: string
+  core_type: CoreType
 }
 
 export interface CoreResponseList {
   count: number
   cores?: CoreResponse[]
 }
+
+export type CoreType = (typeof CoreType)[keyof typeof CoreType]
+
+// eslint-disable-next-line @typescript-eslint/no-redeclare
+export const CoreType = {
+  xray: 'xray',
+  sing_box: 'sing_box',
+} as const
 
 export type CoreCreateFallbacksInboundTags = unknown[] | null
 
@@ -1731,6 +1740,7 @@ export interface CoreCreate {
   config: CoreCreateConfig
   exclude_inbound_tags?: CoreCreateExcludeInboundTags
   fallbacks_inbound_tags?: CoreCreateFallbacksInboundTags
+  core_type?: CoreType
 }
 
 export interface Conflict {

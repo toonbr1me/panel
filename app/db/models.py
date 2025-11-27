@@ -24,6 +24,7 @@ from sqlalchemy.ext.hybrid import hybrid_property
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql.expression import select, text
 
+from app.core.types import CoreType
 from app.db.base import Base
 from app.db.compiles_types import CaseSensitiveString, DaysDiff, EnumArray, StringArray
 
@@ -662,6 +663,11 @@ class CoreConfig(Base):
     config: Mapped[Dict[str, Any]] = mapped_column(JSON(False))
     exclude_inbound_tags: Mapped[Optional[set[str]]] = mapped_column(StringArray(2048), default_factory=set)
     fallbacks_inbound_tags: Mapped[Optional[set[str]]] = mapped_column(StringArray(2048), default_factory=set)
+    core_type: Mapped[CoreType] = mapped_column(
+        SQLEnum(CoreType),
+        default=CoreType.XRAY,
+        server_default=CoreType.XRAY.value,
+    )
 
 
 class NodeStat(Base):
