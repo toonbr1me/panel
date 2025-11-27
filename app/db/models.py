@@ -664,7 +664,7 @@ class CoreConfig(Base):
     exclude_inbound_tags: Mapped[Optional[set[str]]] = mapped_column(StringArray(2048), default_factory=set)
     fallbacks_inbound_tags: Mapped[Optional[set[str]]] = mapped_column(StringArray(2048), default_factory=set)
     core_type: Mapped[CoreType] = mapped_column(
-        SQLEnum(CoreType),
+        SQLEnum(CoreType, values_callable=lambda obj: [e.value for e in obj]),
         default=CoreType.XRAY,
         server_default=CoreType.XRAY.value,
     )
