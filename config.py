@@ -11,7 +11,7 @@ if not TESTING:
 
 _raw_database_url = config("SQLALCHEMY_DATABASE_URL", default="sqlite+aiosqlite:///db.sqlite3")
 # Auto-correct SQLite URL to use async driver (aiosqlite) if the synchronous driver is specified
-if _raw_database_url.startswith("sqlite://") and not _raw_database_url.startswith("sqlite+"):
+if _raw_database_url.startswith("sqlite://"):
     SQLALCHEMY_DATABASE_URL = _raw_database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
 else:
     SQLALCHEMY_DATABASE_URL = _raw_database_url
