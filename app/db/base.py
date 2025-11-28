@@ -1,5 +1,3 @@
-import re
-
 from sqlalchemy.ext.asyncio import AsyncAttrs, async_sessionmaker, create_async_engine
 from sqlalchemy.orm import DeclarativeBase, MappedAsDataclass
 
@@ -20,7 +18,7 @@ def normalize_database_url(url: str) -> str:
     """
     if url.startswith("sqlite:") and not url.startswith("sqlite+"):
         # Replace 'sqlite:' with 'sqlite+aiosqlite:' for async compatibility
-        return re.sub(r"^sqlite:", "sqlite+aiosqlite:", url)
+        return url.replace("sqlite:", "sqlite+aiosqlite:", 1)
     return url
 
 

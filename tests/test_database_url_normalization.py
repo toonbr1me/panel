@@ -1,7 +1,6 @@
 """Test for database URL normalization to ensure async drivers are used."""
 
 
-
 def test_normalize_sqlite_url_without_driver():
     """Test that sqlite:// URLs are normalized to sqlite+aiosqlite://"""
     from app.db.base import normalize_database_url
