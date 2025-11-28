@@ -8,15 +8,30 @@ from config import (
     SQLALCHEMY_POOL_SIZE,
 )
 
-IS_SQLITE = SQLALCHEMY_DATABASE_URL.startswith("sqlite")
+
+def normalize_database_url(url: str) -> str:
+    """
+    Normalize the database URL to ensure async drivers are used.
+
+    SQLite URLs must use the aiosqlite driver for async operations.
+    Converts 'sqlite:///' to 'sqlite+aiosqlite:///' if needed.
+    """
+    if url.startswith("sqlite:") and not url.startswith("sqlite+"):
+        # Replace 'sqlite:' with 'sqlite+aiosqlite:' for async compatibility
+        return url.replace("sqlite:", "sqlite+aiosqlite:", 1)
+    return url
+
+
+DATABASE_URL = normalize_database_url(SQLALCHEMY_DATABASE_URL)
+IS_SQLITE = DATABASE_URL.startswith("sqlite")
 
 if IS_SQLITE:
     engine = create_async_engine(
-        SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}, echo=ECHO_SQL_QUERIES
+        DATABASE_URL, connect_args={"check_same_thread": False}, echo=ECHO_SQL_QUERIES
     )
 else:
     engine = create_async_engine(
-        SQLALCHEMY_DATABASE_URL,
+        DATABASE_URL,
         pool_size=SQLALCHEMY_POOL_SIZE,
         max_overflow=SQLALCHEMY_MAX_OVERFLOW,
         pool_recycle=300,
