@@ -2694,7 +2694,16 @@ install_command() {
 
         if [ "$version" == "latest" ]; then
             latest_tag=$(curl -s ${repo_url}/latest | jq -r '.tag_name')
-            major_version=$(echo "$latest_tag" | sed 's/^v//' | sed 's/[^0-9]*\([0-9]*\)\..*/\1/')
+            if [ "$latest_tag" == "null" ] || [ -z "$latest_tag" ]; then
+                # Default to version 1 if unable to determine from GitHub API
+                major_version=1
+            else
+                major_version=$(echo "$latest_tag" | sed 's/^v//' | sed 's/[^0-9]*\([0-9]*\)\..*/\1/')
+                # Ensure major_version is a valid number, default to 1 if not
+                if ! [[ "$major_version" =~ ^[0-9]+$ ]]; then
+                    major_version=1
+                fi
+            fi
             return 0
         fi
 
@@ -2730,6 +2739,10 @@ install_command() {
         # Check if the repo contains the version tag
         if curl -s -o /dev/null -w "%{http_code}" "${repo_url}/tags/${version}" | grep -q "^200$"; then
             major_version=$(echo "$version" | sed 's/^v//' | sed 's/[^0-9]*\([0-9]*\)\..*/\1/')
+            # Ensure major_version is a valid number, default to 1 if not
+            if ! [[ "$major_version" =~ ^[0-9]+$ ]]; then
+                major_version=1
+            fi
             return 0
         else
             return 1
