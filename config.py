@@ -9,7 +9,12 @@ if not TESTING:
     load_dotenv()
 
 
-SQLALCHEMY_DATABASE_URL = config("SQLALCHEMY_DATABASE_URL", default="sqlite+aiosqlite:///db.sqlite3")
+_raw_database_url = config("SQLALCHEMY_DATABASE_URL", default="sqlite+aiosqlite:///db.sqlite3")
+# Auto-correct SQLite URL to use async driver (aiosqlite) if the synchronous driver is specified
+if _raw_database_url.startswith("sqlite://"):
+    SQLALCHEMY_DATABASE_URL = _raw_database_url.replace("sqlite://", "sqlite+aiosqlite://", 1)
+else:
+    SQLALCHEMY_DATABASE_URL = _raw_database_url
 SQLALCHEMY_POOL_SIZE = config("SQLALCHEMY_POOL_SIZE", cast=int, default=25)
 SQLALCHEMY_MAX_OVERFLOW = config("SQLALCHEMY_MAX_OVERFLOW", cast=int, default=60)
 ECHO_SQL_QUERIES = config("ECHO_SQL_QUERIES", cast=bool, default=False)
