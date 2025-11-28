@@ -1,5 +1,6 @@
 from asyncio import Lock
 from copy import deepcopy
+import logging
 
 from aiocache import cached
 
@@ -109,4 +110,7 @@ async def init_core_manager():
         core_configs, _ = await get_core_configs(db)
 
         for config in core_configs:
-            await core_manager.update_core(config)
+            try:
+                await core_manager.update_core(config)
+            except Exception as e:
+                logging.error(f"Failed to load core config {config.id}: {e}")
