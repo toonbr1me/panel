@@ -54,7 +54,7 @@ def check_and_modify_ip(ip_address: str) -> str:
         ip = ipaddress.ip_address(resolved_ip)
 
         if ip == ipaddress.ip_address("0.0.0.0"):
-            return "localhost"
+            return "0.0.0.0"
         elif ip.is_private:
             return ip_address
         else:
